@@ -1,9 +1,11 @@
+-- import Logic.Types
 import Data.Binary
+import qualified Codec.Compression.GZip as GZip
 import qualified Data.Map as Map
 type Id = Int
 
-newtype PlayerId = PlayerId Id deriving (Show)
-newtype UnitId = UnitId Id deriving (Show)
+newtype PlayerId = PlayerId Id deriving (Show, Eq, Ord)
+newtype UnitId = UnitId Id deriving (Show, Eq, Ord)
 
 instance Binary UnitId where
   put (UnitId a) = put a
@@ -72,10 +74,10 @@ instance Binary GameState where
 
 main = do
   let c = GameState {
-    _units= Map.empty,
+    _units= Map.fromList[(UnitId 1, Unit{_UnitState=Idle})],
     _tick=1,
-    _players=Map.empty}
-  let e = encode c
+    _players=Map.fromList[(PlayerId 1, (PlayerState{_gold=1,_wood=1}))]}
+  let e = GZip.compress $ encode c
   print e
-  let d = decode e
+  let d = decode $ GZip.decompress e
   print (d :: GameState)
