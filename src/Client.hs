@@ -1,3 +1,5 @@
+import WebLogic.TypeSerializer
+import WebLogic.GameOperations
 import Control.Monad (unless,when)
 import qualified Data.ByteString as S
 import Network.Socket hiding (recv)
@@ -16,7 +18,7 @@ main = withSocketsDo $ do
 
 mainLoop :: Socket -> IO ()
 mainLoop sock = do
-  rMsg <- recv sock 10
-  putStr $ show rMsg
+  rMsg <- recv sock 1024
+  putStr $ deserializeGameState rMsg
   unless (S.null rMsg) $ do
     mainLoop sock
