@@ -1,8 +1,12 @@
+import WebLogic.GameOperations
+import WebLogic.TypesSerializer
 import Control.Monad (unless,when)
+import Data.String.Conversions
 import qualified Data.ByteString as S
 import Network.Socket hiding (recv)
 import Network.Socket.ByteString (recv)
-
+import Logic.Types
+import Data.Binary
 
 main :: IO ()
 main = withSocketsDo $ do
@@ -10,13 +14,14 @@ main = withSocketsDo $ do
     let serverAddr = head addrInfo
     sock <- socket (addrFamily serverAddr) Stream defaultProtocol
     connect sock (addrAddress serverAddr)
-    mainLoop sock
+    mainLoop sock    
     sClose sock
     putStrLn "Disconnected!"
 
 mainLoop :: Socket -> IO ()
 mainLoop sock = do
-  rMsg <- recv sock 10
-  putStr $ show rMsg
-  unless (S.null rMsg) $ do
-    mainLoop sock
+  rMsg <- recv sock 300
+  --unless (S.null rMsg) $ do
+  --   mainLoop sock
+  let gs = dserializeGameState $ convertString rMsg
+  print (gs :: GameState)
