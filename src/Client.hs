@@ -20,8 +20,9 @@ main = withSocketsDo $ do
 
 mainLoop :: Socket -> IO ()
 mainLoop sock = do
-  rMsg <- recv sock 300
-  --unless (S.null rMsg) $ do
-  --   mainLoop sock
-  let gs = dserializeGameState $ convertString rMsg
-  print (gs :: GameState)
+    rMsg <- recv sock 300
+    let gs = dserializeGameState $ convertString rMsg
+    print (gs :: GameState)
+
+    unless (S.null rMsg) $ do
+        mainLoop sock
